@@ -28,7 +28,14 @@ It uses biological data and goal-based AI logic to generate dynamic training pla
 
 ---
 
-## 📦 Installation
+## 🌍 Live Demo & Download
+
+- 👉 [Expo Preview](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai)
+- 📥 [Download Android APK](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai/builds/4f5b0b3a-7936-4b64-bc0a-dc822c9adb13)
+
+---
+
+## 📦 Installation (Dev)
 
 ```bash
 npm install
@@ -43,22 +50,6 @@ eas build -p android --profile production
 
 ---
 
-## 🌍 Live Preview
-
-👉 [Try on Expo.dev](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai)
-
----
-
-## 📸 Screenshots
-
-<!-- Replace with actual links if available -->
-- HomeScreen with user input
-- Goal-based summary page
-- Country-based meal suggestions
-- Check-in & alerts
-
----
-
 ## 👨‍💻 Developer
 
 Developed by **Ahmet Şen**  
@@ -66,12 +57,12 @@ GitHub: [@ahmtub](https://github.com/ahmtub)
 
 ---
 
-## 📌 Roadmap
+## 📜 License & Disclaimer
 
-- [ ] Firebase/SQLite data persistence
-- [ ] User login & account tracking
-- [ ] AI-enhanced adaptive training engine
-- [ ] Chatbot with fitness Q&A
+This project is for educational and portfolio use.  
+All rights reserved © 2025 by Ahmet Şen.
+
+🔒 Unauthorized copying, redistribution, or use of the code or APK for commercial purposes without permission is strictly prohibited.
 
 ---
 
