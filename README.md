@@ -26,8 +26,7 @@ npx expo start
 
 
 
-## 🌐 Yayın Linki (Expo)
-
+##🌐 Yayın Linki (Expo)
 👉 [Expo.dev üzerinden canlı test et](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai)
 
 
