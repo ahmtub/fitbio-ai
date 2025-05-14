@@ -1,12 +1,15 @@
 import { useRef, useState } from 'react';
-import { Button, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button } from 'react-native-paper';
 
-export default function HomeScreen({ navigation }) {
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [age, setAge] = useState('');
-  const [gender, setGender] = useState('');
-  const [activityLevel, setActivityLevel] = useState('');
+export default function HomeScreen({ navigation, route }) {
+  const { height: passedHeight, weight: passedWeight, age: passedAge, gender: passedGender, activityLevel: passedActivity } = route.params || {};
+
+  const [height, setHeight] = useState(passedHeight || '');
+  const [weight, setWeight] = useState(passedWeight || '');
+  const [age, setAge] = useState(passedAge || '');
+  const [gender, setGender] = useState(passedGender || '');
+  const [activityLevel, setActivityLevel] = useState(passedActivity || '');
 
   // Refs for next input focus
   const weightRef = useRef(null);
@@ -14,15 +17,19 @@ export default function HomeScreen({ navigation }) {
   const genderRef = useRef(null);
   const activityRef = useRef(null);
 
-  const handleSubmit = () => {
+  const handleGoal = (goal) => {
     if (!height || !weight || !age || !gender || !activityLevel) {
       alert("Lütfen tüm alanları doldurun");
       return;
     }
 
+    const numericWeight = parseFloat(weight);
+    const numericHeight = parseFloat(height);
+    const numericAge = parseFloat(age);
+
     const bmr = gender === 'male'
-      ? 10 * weight + 6.25 * height - 5 * age + 5
-      : 10 * weight + 6.25 * height - 5 * age - 161;
+      ? 10 * numericWeight + 6.25 * numericHeight - 5 * numericAge + 5
+      : 10 * numericWeight + 6.25 * numericHeight - 5 * numericAge - 161;
 
     const multiplier = {
       passive: 1.2,
@@ -30,14 +37,35 @@ export default function HomeScreen({ navigation }) {
       athletic: 1.9
     }[activityLevel] || 1.2;
 
-    const tdee = bmr * multiplier;
+    let tdee = bmr * multiplier;
 
-    navigation.navigate('Goal', { bmr, tdee });
+    if (goal === 'muscle') {
+      tdee += 300;
+    } else if (goal === 'fatburn') {
+      tdee -= 400;
+    }
+
+    navigation.navigate('Result', { bmr, tdee, goal });
+  };
+
+  const handleDietSuggestion = () => {
+    if (!height || !weight || !age || !gender || !activityLevel) {
+      alert("Kültürel diyet için tüm bilgileri doldurun");
+      return;
+    }
+
+    navigation.navigate('DietSuggestion', {
+      height: parseFloat(height),
+      weight: parseFloat(weight),
+      age: parseFloat(age),
+      gender,
+      activityLevel
+    });
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.wrapper}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>👤 FitBio AI | Bilgilerini Gir</Text>
 
         <TextInput
@@ -101,8 +129,28 @@ export default function HomeScreen({ navigation }) {
         />
 
         <View style={styles.button}>
-          <Button title="Devam Et ➡️" onPress={handleSubmit} color="#4caf50" />
+          <Button mode="contained" onPress={() => handleGoal('muscle')} buttonColor="#4caf50" textColor="#fff">
+            💪 Kas Kütlesi Artır
+          </Button>
         </View>
+
+        <View style={[styles.button, { marginTop: 10 }]}> 
+          <Button mode="contained" onPress={() => handleGoal('fatburn')} buttonColor="#f44336" textColor="#fff">
+            🔥 Yağ Yak
+          </Button>
+        </View>
+
+        <View style={[styles.button, { marginTop: 15 }]}> 
+          <Button
+            mode="contained"
+            onPress={handleDietSuggestion}
+            buttonColor="#00bcd4"
+            textColor="#fff"
+          >
+            🍽️ Kültürel Diyet Önerisi
+          </Button>
+        </View>
+
       </ScrollView>
     </KeyboardAvoidingView>
   );
