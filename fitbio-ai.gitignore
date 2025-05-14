@@ -1,0 +1,12 @@
+# Node modules
+node_modules/
+.expo/
+.expo-shared/
+
+# Build
+dist/
+build/
+
+# OS & editor files
+.DS_Store
+*.log
