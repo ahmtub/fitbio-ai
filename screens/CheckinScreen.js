@@ -1,28 +1,54 @@
 import { useState } from 'react';
-import { Alert, Button, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Button,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from 'react-native';
+
+import { saveCheckin } from '../utils/checkinStorage'; // 🔗 Yeni modül
 
 export default function CheckinScreen() {
   const [mood, setMood] = useState('');
   const [sleep, setSleep] = useState('');
   const [workedOut, setWorkedOut] = useState('');
+  const [notes, setNotes] = useState('');
 
-  const handleCheckIn = () => {
+  const handleCheckIn = async () => {
     if (!mood || !sleep || !workedOut) {
       Alert.alert("Eksik Bilgi", "Lütfen tüm alanları doldurun.");
       return;
     }
 
-    let msg = `📋 Günlük Durum:\n\n😌 Ruh Hali: ${mood}\n🛌 Uyku: ${sleep} saat\n🏋️‍♂️ Spor: ${workedOut}`;
+    const checkinData = {
+      mood,
+      sleep: parseFloat(sleep),
+      workedOut: workedOut.toLowerCase(),
+      notes
+    };
 
-    if (parseFloat(sleep) < 6) {
-      msg += `\n\n⚠️ Bugün az uyumuşsun. Hafif tempo önerilir.`;
+    await saveCheckin(checkinData); // 💾 Kaydetme
+
+    let msg = `📋 Günlük Durum:\n\n😌 Ruh Hali: ${checkinData.mood}\n🛌 Uyku: ${checkinData.sleep} saat\n🏋️‍♂️ Spor: ${checkinData.workedOut === 'evet' ? 'Yapıldı' : 'Yapılmadı'}`;
+
+    if (checkinData.sleep < 6) {
+      msg += `\n⚠️ Az uyumuşsun, tempoyu hafif tutman önerilir.`;
     }
 
-    if (mood.toLowerCase().includes('yorgun') || mood.toLowerCase().includes('kötü')) {
+    if (checkinData.mood.toLowerCase().includes('yorgun') || checkinData.mood.toLowerCase().includes('kötü')) {
       msg += `\n💡 Modun düşük. Bol su ve dinlenme önerilir.`;
     }
 
-    Alert.alert("🧠 Check-in Raporu", msg);
+    if (checkinData.notes) {
+      msg += `\n\n📝 Not: ${checkinData.notes}`;
+    }
+
+    Alert.alert("🧠 Check-in Kaydedildi", msg);
   };
 
   return (
@@ -56,6 +82,16 @@ export default function CheckinScreen() {
           placeholderTextColor="#aaa"
           value={workedOut}
           onChangeText={setWorkedOut}
+        />
+
+        <Text style={styles.label}>📝 Notlar (opsiyonel):</Text>
+        <TextInput
+          style={[styles.input, { height: 80 }]}
+          placeholder="Bugün kendinle ilgili ne not almak istersin?"
+          placeholderTextColor="#aaa"
+          multiline
+          value={notes}
+          onChangeText={setNotes}
         />
 
         <View style={styles.button}>

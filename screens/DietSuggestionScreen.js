@@ -1,140 +1,87 @@
-import { Picker } from '@react-native-picker/picker';
-import * as Print from 'expo-print';
-import { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
-
-import mealCulture from '../utils/mealCulture';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { generateAIDietPlan } from '../utils/aiDietPlanner';
 
 export default function DietSuggestionScreen({ route }) {
-  const { height, weight, age, gender, activityLevel, goal } = route.params;
-  const [selectedCountry, setSelectedCountry] = useState('Türkiye');
+  const { userData } = route.params;
+  const [diet, setDiet] = useState(null);
 
-  const calculateTDEE = () => {
-    const bmr = gender === 'male'
-      ? 10 * weight + 6.25 * height - 5 * age + 5
-      : 10 * weight + 6.25 * height - 5 * age - 161;
+  useEffect(() => {
+    const fetchDiet = async () => {
+      const result = await generateAIDietPlan(userData);
+      setDiet(result);
+    };
+    fetchDiet();
+  }, []);
 
-    const multiplier = {
-      passive: 1.2,
-      active: 1.55,
-      athletic: 1.9
-    }[activityLevel] || 1.2;
+  if (!diet) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" color="#4ade80" />
+        <Text style={{ color: '#fff', marginTop: 10 }}>Diyet önerisi hazırlanıyor...</Text>
+      </View>
+    );
+  }
 
-    let tdee = bmr * multiplier;
-    if (goal === 'muscle') tdee += 300;
-    if (goal === 'fatburn') tdee -= 400;
-    return tdee;
-  };
-
-  const tdee = calculateTDEE();
-  const baseMenu = mealCulture[selectedCountry]?.sampleMenu || [];
-
-  // Basit filtreleme örneği
-  const personalizedMenu = baseMenu.filter(item => {
-    if (goal === 'muscle') {
-      return /et|yumurta|bakla|yoğurt|süt|tavuk|balık/i.test(item);
-    } else if (goal === 'fatburn') {
-      return /salata|sebze|yoğurt|haşlama|yumurta|ızgara/i.test(item);
-    }
-    return true;
-  });
-
-  const recommendationHeader = goal === 'muscle'
-    ? '💪 Kas Artırımı için Menü'
-    : goal === 'fatburn'
-    ? '🔥 Yağ Yakımı için Menü'
-    : '🍽️ Genel Diyet Menüsü';
-
-  const goalNote = goal === 'muscle'
-    ? 'Bu plan kas yapımı desteklemek için yüksek protein içerir.'
-    : goal === 'fatburn'
-    ? 'Bu plan yağ yakımını desteklemek için düşük karbonhidratlı ve lifli içeriklere odaklıdır.'
-    : '';
-
-  const handlePDFExport = async () => {
-    const html = `
-      <html>
-        <body>
-          <h1>FitBio AI - ${selectedCountry} Diyet Planı</h1>
-          <p><strong>Boy:</strong> ${height} cm</p>
-          <p><strong>Kilo:</strong> ${weight} kg</p>
-          <p><strong>Yaş:</strong> ${age}</p>
-          <p><strong>Cinsiyet:</strong> ${gender}</p>
-          <p><strong>Aktivite Seviyesi:</strong> ${activityLevel}</p>
-          <p><strong>Hedef:</strong> ${goal || 'Belirtilmedi'}</p>
-          <p><strong>Tahmini Günlük Kalori İhtiyacı (TDEE):</strong> ${Math.round(tdee)} kcal</p>
-          <p>${goalNote}</p>
-          <ul>
-            ${personalizedMenu.map((item) => `<li>${item}</li>`).join('')}
-          </ul>
-        </body>
-      </html>
-    `;
-    await Print.printAsync({ html });
-  };
+  const { meals, totalCalories, macros } = diet;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>🌍 Ülke Seç:</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>🍽️ AI Tabanlı Günlük Diyet Önerisi</Text>
 
-      <View style={styles.pickerWrapper}>
-        <Picker
-          selectedValue={selectedCountry}
-          onValueChange={(itemValue) => setSelectedCountry(itemValue)}
-          style={styles.picker}
-        >
-          {Object.keys(mealCulture).map((country) => (
-            <Picker.Item key={country} label={country} value={country} />
-          ))}
-        </Picker>
+      <Text style={styles.meal}>🥣 Kahvaltı: {meals.breakfast}</Text>
+      <Text style={styles.meal}>🍛 Öğle: {meals.lunch}</Text>
+      <Text style={styles.meal}>🍲 Akşam: {meals.dinner}</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.macroTitle}>Makro Değerler:</Text>
+        <Text style={styles.macro}>Toplam Kalori: {totalCalories} kcal</Text>
+        <Text style={styles.macro}>Protein: {macros.protein}</Text>
+        <Text style={styles.macro}>Karbonhidrat: {macros.carbs}</Text>
+        <Text style={styles.macro}>Yağ: {macros.fat}</Text>
       </View>
-
-      <Text style={styles.sub}>{recommendationHeader} ({selectedCountry})</Text>
-      {goalNote !== '' && <Text style={styles.note}>📌 {goalNote}</Text>}
-
-      {personalizedMenu.map((item, index) => (
-        <Text key={index} style={styles.item}>✅ {item}</Text>
-      ))}
-
-      <Button title="📤 PDF Olarak Kaydet" onPress={handlePDFExport} />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     backgroundColor: '#1e1e2f',
-    flexGrow: 1
+    flex: 1,
+    padding: 20
   },
-  header: {
-    fontSize: 20,
+  loading: {
+    flex: 1,
+    backgroundColor: '#1e1e2f',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  title: {
+    color: '#4ade80',
+    fontSize: 22,
     fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 10
-  },
-  pickerWrapper: {
-    backgroundColor: '#fff',
-    borderRadius: 6,
     marginBottom: 20
   },
-  picker: {
-    height: 50,
-    width: '100%'
+  meal: {
+    color: '#fff',
+    fontSize: 16,
+    marginBottom: 15
   },
-  sub: {
+  card: {
+    backgroundColor: '#2e2e3e',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20
+  },
+  macroTitle: {
+    color: '#fff',
     fontSize: 18,
-    color: '#00ffcc',
-    marginBottom: 6
-  },
-  note: {
-    fontSize: 14,
-    color: '#ffff99',
+    fontWeight: '600',
     marginBottom: 10
   },
-  item: {
-    fontSize: 16,
-    color: '#fff',
-    marginBottom: 8
+  macro: {
+    color: '#ccc',
+    fontSize: 15,
+    marginBottom: 5
   }
 });
