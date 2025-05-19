@@ -1,219 +1,154 @@
-import { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
-import WorkoutSummaryCard from '../components/WorkoutSummaryCard';
-import useBodyMetrics from '../hooks/useBodyMetrics';
-import { generateAIDietPlan } from '../utils/aiDietPlanner'; // 🔥 AI diyeti
-import { generateWorkoutPlanFromExerciseDB } from '../utils/generateWorkoutPlanFromExerciseDB';
-import { generateFullReportHTML } from '../utils/pdfGenerator';
-import { saveAndSharePDF } from '../utils/pdfHelper';
 
-export default function ResultScreen({ route, navigation }) {
-  const userData = route?.params?.userData;
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { calculateBodyMetrics } from '../utils/useBodyMetrics';
+import { recommendDiet } from '../utils/dietRecommender';
+import { generateWorkoutPlan } from '../utils/workoutPlanner';
 
+export default function ResultScreen({ route }) {
+  const {
+    weight, height, age, gender, activityLevel,
+    goal, workoutTime, fatMass, muscleMass, level
+  } = route.params;
 
-  const [workout, setWorkout] = useState(null);
+  const [metrics, setMetrics] = useState(null);
+  const [diet, setDiet] = useState(null);
+  const [workoutPlan, setWorkoutPlan] = useState([]);
 
-  const handlePdfExport = async () => {
-    if (userData && metrics && workout && diet) {
-      const html = generateFullReportHTML({
-        userData,
-        metrics,
-        weeklyPlan: workout,
-        diet
-      });
+  useEffect(() => {
+    const calc = calculateBodyMetrics({
+      weight, height, age, gender, activityLevel,
+      fatMass, muscleMass
+    });
+    setMetrics(calc);
 
-      await saveAndSharePDF(html, "FitBioAI_Rapor");
-    } else {
-      alert("PDF oluşturmak için tüm veriler hazır değil!");
+    const recommended = recommendDiet(goal, workoutTime, {
+      fatPercent: fatMass,
+      muscleMass
+    });
+    setDiet(recommended);
+
+    const plan = generateWorkoutPlan(goal, muscleMass, workoutTime, level);
+    setWorkoutPlan(plan);
+  }, []);
+
+  const handleShare = async () => {
+    const content = generatePlanText();
+    const path = FileSystem.documentDirectory + 'plan_summary.txt';
+    await FileSystem.writeAsStringAsync(path, content);
+
+    try {
+      await Sharing.shareAsync(path);
+    } catch (error) {
+      Alert.alert('Paylaşım Hatası', 'Plan paylaşılırken bir sorun oluştu.');
     }
   };
 
+  const generatePlanText = () => {
+    let text = "📋 FitBio AI - Antrenman Planı Özeti\n\n";
+    workoutPlan.forEach(day => {
+      text += `📅 ${day.day}:\n`;
+      day.exercises.forEach(ex => {
+        text += `- ${ex.name} (${ex.sets}x${ex.reps})\n`;
+      });
+      text += '\n';
+    });
+    return text;
+  };
 
-  
-
-  
-
-  useEffect(() => {
-    const fetchPlans = async () => {
-      const dietResult = await generateAIDietPlan(userData);
-      if (dietResult) setDiet(dietResult);
-
-      const workoutResult = await generateWorkoutPlanFromExerciseDB(userData);
-      if (workoutResult) setWorkout(workoutResult);
-    };
-
-    if (userData) fetchPlans();
-  }, [userData]);
-
-  const [diet, setDiet] = useState(null);
-
-  useEffect(() => {
-    const fetchDiet = async () => {
-      const result = await generateAIDietPlan(userData); // 📡 AI diyeti çek
-      if (result) setDiet(result);
-    };
-
-    if (userData) fetchDiet();
-  }, [userData]);
-
-  if (!userData) {
+  if (!metrics || !diet) {
     return (
-      <View style={styles.fallback}>
-        <Text style={styles.errorText}>⚠️ Kullanıcı verisi bulunamadı. Lütfen ana menüden tekrar başlayın.</Text>
-        <Button title="Ana Sayfa" color="#4ade80" onPress={() => navigation.navigate('Home')} />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4caf50" />
+        <Text style={styles.loadingText}>Analiz hazırlanıyor...</Text>
       </View>
     );
   }
 
-  const metrics = useBodyMetrics(userData);
-  
-  const { tdee = 0, bmr = 0, goal } = metrics || {};
-  let recommendation = '';
-
-  if (goal === 'muscle') {
-    recommendation = `
-💪 Hedef: Kas Kütlesi Artırmak
-
-🍽️ Günlük Kalori: ${Math.round(tdee + 300)} kcal
-🍗 Diyet: Yüksek protein, orta karbonhidrat
-🏋️‍♂️ Antrenman: Split (Push/Pull/Legs)
-💊 Takviye: Kreatin, ZMA
-📆 Program: Haftada 5 gün
-    `;
-  } else if (goal === 'fatburn' || goal === 'fat') {
-    recommendation = `
-🔥 Hedef: Yağ Yakmak
-
-🍽️ Günlük Kalori: ${Math.round(tdee - 400)} kcal
-🥗 Diyet: Düşük karbonhidrat, yüksek protein
-🏃‍♂️ Kardiyo: HIIT + yürüyüş
-💊 Takviye: CLA, L-Karnitin
-📆 Program: Haftada 4-6 gün
-    `;
-  } else {
-    recommendation = `Hedef belirtilmedi.`;
-  }
-
-  const handleExportFullReport = async () => {
-    const html = generateFullReportHTML({
-      userData,
-      metrics,
-      weeklyPlan,
-      diet
-    });
-
-    await saveAndSharePDF(html, 'FitBioAI_KisiselRapor');
-  };
-
-  if (!metrics) return <Text style={{ color: '#fff', padding: 20 }}>Veriler işleniyor...</Text>;
-
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>🧠 FitBio AI – Analiz & Plan</Text>
+      <Text style={styles.title}>🧠 FitBio AI – Analiz & Plan</Text>
 
-      <WorkoutSummaryCard metrics={metrics}  userData={userData} />
+      <Text style={styles.sectionTitle}>📊 Vücut Analizi</Text>
+      <Text style={styles.item}>🎯 Hedef: {goal}</Text>
+      <Text style={styles.item}>🧍‍♂️ BMI: {metrics.bmi}</Text>
+      <Text style={styles.item}>🔥 BMR: {metrics.bmr} kcal</Text>
+      <Text style={styles.item}>⚡ TDEE: {metrics.tdee} kcal</Text>
+      <Text style={styles.item}>🧈 Yağ Kütlesi: {metrics.fatMass} kg</Text>
+      <Text style={styles.item}>💪 Kas Kütlesi: {metrics.muscleMass} kg</Text>
 
-      <View style={styles.planContainer}>
-        <Text style={styles.planTitle}>📅 Haftalık Antrenman Planı</Text>
-        {workout && Object.entries(workout).map(([day, activity]) => (
-          <View key={day} style={styles.dayItem}>
-            <Text style={styles.day}>{day}:</Text>
-            <Text style={styles.activity}>{activity}</Text>
-          </View>
-        ))}
-      </View>{diet && (
-        <View style={styles.planContainer}>
-          <Text style={styles.planTitle}>🍽️ AI Tabanlı Günlük Diyet</Text>
-          <Text style={styles.activity}>🥣 Kahvaltı: {diet.meals.breakfast}</Text>
-          <Text style={styles.activity}>🍛 Öğle: {diet.meals.lunch}</Text>
-          <Text style={styles.activity}>🍲 Akşam: {diet.meals.dinner}</Text>
-          <Text style={styles.activity}>🔢 Kalori: {diet.totalCalories} kcal</Text>
-          <Text style={styles.activity}>🥩 Protein: {diet.macros.protein}</Text>
-          <Text style={styles.activity}>🍞 Karbonhidrat: {diet.macros.carbs}</Text>
-          <Text style={styles.activity}>🧈 Yağ: {diet.macros.fat}</Text>
+      <Text style={styles.sectionTitle}>🏋️ Haftalık Antrenman Planı</Text>
+      {workoutPlan.map((day, i) => (
+        <View key={i}>
+          <Text style={styles.item}>📅 {day.day}:</Text>
+          {day.exercises.map((ex, j) => (
+            <Text key={j} style={styles.item}>• {ex.name} ({ex.sets}x{ex.reps})</Text>
+          ))}
         </View>
-      )}
+      ))}
 
-      <View style={styles.button}>
-        <Button title="📅 Bugünkü Check-in" color="#2196f3" onPress={() => navigation.navigate('Checkin')} />
-      </View>
+      <Text style={styles.sectionTitle}>🍽️ AI Tabanlı Günlük Diyet</Text>
+      <Text style={styles.item}>🥣 Kahvaltı: {diet.meals.breakfast}</Text>
+      <Text style={styles.item}>🍛 Öğle: {diet.meals.lunch}</Text>
+      <Text style={styles.item}>🍲 Akşam: {diet.meals.dinner}</Text>
+      <Text style={styles.item}>🍏 Ara Öğün: {diet.meals.snacks}</Text>
 
-      <View style={styles.button}>
-              </View>
-    
-      <View style={{ marginTop: 20 }}>
-              </View>
-    
-      <View style={{ marginTop: 10, marginBottom: 20 }}>
-        <Button title="📄 PDF olarak görüntüle & dışa aktar" onPress={handlePdfExport} color="#4ade80" />
-      </View>
+      <Text style={styles.sectionTitle}>💊 Takviye Önerileri</Text>
+      {diet.supplements.map((supp, i) => (
+        <Text key={i} style={styles.item}>• {supp}</Text>
+      ))}
 
+      <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+        <Text style={styles.shareText}>📤 Planı Paylaş / Kaydet</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1e1e2f',
-    flex: 1,
-    padding: 20
+    padding: 20,
+    backgroundColor: "#1e1e2f",
+    flex: 1
   },
-  fallback: {
+  title: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 20
+  },
+  sectionTitle: {
+    color: "#ccc",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 20
+  },
+  item: {
+    color: "#fff",
+    fontSize: 14,
+    marginVertical: 3
+  },
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1e1e2f',
-    padding: 30
+    backgroundColor: '#1e1e2f'
   },
-  errorText: {
-    color: '#ff6b6b',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  loadingText: {
     color: '#fff',
-    textAlign: 'center'
+    marginTop: 10
   },
-  planContainer: {
-    marginTop: 20,
-    backgroundColor: '#2e2e3e',
-    padding: 16,
-    borderRadius: 12
-  },
-  planTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 10
-  },
-  dayItem: {
-    marginBottom: 8
-  },
-  day: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4ade80'
-  },
-  activity: {
-    fontSize: 16,
-    color: '#ccc'
-  },
-  recommendation: {
-    fontSize: 16,
-    marginTop: 20,
-    backgroundColor: '#2e2e3e',
-    padding: 15,
+  shareButton: {
+    marginTop: 30,
+    padding: 12,
     borderRadius: 8,
-    lineHeight: 24,
-    color: '#ccc'
+    backgroundColor: "#4ade80"
   },
-  button: {
-    marginTop: 20,
-    borderRadius: 10,
-    overflow: 'hidden'
+  shareText: {
+    color: "#000",
+    fontWeight: "bold",
+    textAlign: "center"
   }
 });

@@ -1,87 +1,99 @@
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { generateAIDietPlan } from '../utils/aiDietPlanner';
+
+// screens/DietSuggestionScreen.js
+
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { recommendDiet } from '../utils/dietRecommender';
 
 export default function DietSuggestionScreen({ route }) {
-  const { userData } = route.params;
+  const { goal, workoutTime, fatPercent, muscleMass } = route.params;
   const [diet, setDiet] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDiet = async () => {
-      const result = await generateAIDietPlan(userData);
-      setDiet(result);
-    };
-    fetchDiet();
-  }, []);
+    const result = recommendDiet(goal, workoutTime, {
+      fatPercent,
+      muscleMass
+    });
+    setDiet(result);
+    setLoading(false);
+  }, [goal, workoutTime, fatPercent, muscleMass]);
 
-  if (!diet) {
+  if (loading) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color="#4ade80" />
-        <Text style={{ color: '#fff', marginTop: 10 }}>Diyet önerisi hazırlanıyor...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4caf50" />
+        <Text style={styles.loadingText}>AI tabanlı diyet planı hazırlanıyor...</Text>
       </View>
     );
   }
 
-  const { meals, totalCalories, macros } = diet;
+  if (!diet) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.errorText}>Uygun bir diyet planı bulunamadı.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>🍽️ AI Tabanlı Günlük Diyet Önerisi</Text>
+      <Text style={styles.title}>🍽️ AI Diyet Planı</Text>
+      <Text style={styles.label}>🥣 Kahvaltı:</Text>
+      <Text style={styles.value}>{diet.meals.breakfast}</Text>
+      <Text style={styles.label}>🍛 Öğle:</Text>
+      <Text style={styles.value}>{diet.meals.lunch}</Text>
+      <Text style={styles.label}>🍲 Akşam:</Text>
+      <Text style={styles.value}>{diet.meals.dinner}</Text>
+      <Text style={styles.label}>🍏 Ara Öğün:</Text>
+      <Text style={styles.value}>{diet.meals.snacks}</Text>
 
-      <Text style={styles.meal}>🥣 Kahvaltı: {meals.breakfast}</Text>
-      <Text style={styles.meal}>🍛 Öğle: {meals.lunch}</Text>
-      <Text style={styles.meal}>🍲 Akşam: {meals.dinner}</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.macroTitle}>Makro Değerler:</Text>
-        <Text style={styles.macro}>Toplam Kalori: {totalCalories} kcal</Text>
-        <Text style={styles.macro}>Protein: {macros.protein}</Text>
-        <Text style={styles.macro}>Karbonhidrat: {macros.carbs}</Text>
-        <Text style={styles.macro}>Yağ: {macros.fat}</Text>
-      </View>
+      {diet.supplements && diet.supplements.length > 0 && (
+        <>
+          <Text style={styles.label}>💊 Takviyeler:</Text>
+          {diet.supplements.map((supp, index) => (
+            <Text style={styles.value} key={index}>• {supp}</Text>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1e1e2f',
     flex: 1,
+    backgroundColor: '#1e1e2f',
     padding: 20
   },
-  loading: {
-    flex: 1,
-    backgroundColor: '#1e1e2f',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   title: {
-    color: '#4ade80',
     fontSize: 22,
+    color: '#fff',
     fontWeight: 'bold',
     marginBottom: 20
   },
-  meal: {
-    color: '#fff',
+  label: {
+    color: '#ccc',
     fontSize: 16,
-    marginBottom: 15
+    marginTop: 10
   },
-  card: {
-    backgroundColor: '#2e2e3e',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 20
-  },
-  macroTitle: {
+  value: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 14,
     marginBottom: 10
   },
-  macro: {
-    color: '#ccc',
-    fontSize: 15,
-    marginBottom: 5
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1e1e2f'
+  },
+  loadingText: {
+    color: '#fff',
+    marginTop: 10
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16
   }
 });

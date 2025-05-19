@@ -1,3 +1,4 @@
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -22,13 +23,13 @@ export default function BodyAnalysisForm({ navigation }) {
   const [waterPercentage, setWaterPercentage] = useState('');
   const [bodyType, setBodyType] = useState('');
   const [goal, setGoal] = useState('');
+  const [level, setLevel] = useState('');
 
   const weightRef = useRef(null);
   const ageRef = useRef(null);
   const genderRef = useRef(null);
   const activityRef = useRef(null);
 
-  // 🚀 İlk açılışta verileri yükle
   useEffect(() => {
     const loadSavedData = async () => {
       try {
@@ -45,6 +46,7 @@ export default function BodyAnalysisForm({ navigation }) {
           setWaterPercentage(parsed.waterPercentage || '');
           setBodyType(parsed.bodyType || '');
           setGoal(parsed.goal || '');
+          setLevel(parsed.level || '');
         }
       } catch (e) {
         console.log('Veri yüklenemedi:', e);
@@ -54,31 +56,33 @@ export default function BodyAnalysisForm({ navigation }) {
   }, []);
 
   const handleGoalSubmit = async () => {
-    if (!height || !weight || !age || !gender || !activityLevel || !goal) {
+    if (!height || !weight || !age || !gender || !activityLevel || !goal || !level) {
       alert('Lütfen tüm zorunlu alanları doldurun');
       return;
     }
 
-    const userData = {
-      height: parseFloat(height),
-      weight: parseFloat(weight),
-      age: parseFloat(age),
-      gender,
-      activityLevel,
-      goal,
-      fatPercentage: parseFloat(fatPercentage),
-      muscleMass: parseFloat(muscleMass),
-      waterPercentage: parseFloat(waterPercentage),
-      bodyType
-    };
-
     try {
-      await AsyncStorage.setItem('fitbio_analysis_data', JSON.stringify(userData));
+      await AsyncStorage.setItem('fitbio_analysis_data', JSON.stringify({
+        height, weight, age, gender, activityLevel,
+        fatPercentage, muscleMass, waterPercentage,
+        bodyType, goal, level
+      }));
     } catch (e) {
       console.log('Veri kaydetme hatası:', e);
     }
 
-    navigation.navigate('Result', { userData });
+    navigation.navigate('Result', {
+      weight: parseFloat(weight),
+      height: parseFloat(height),
+      age: parseFloat(age),
+      gender,
+      activityLevel,
+      goal: goal === "muscle" ? "Kas Kütlesi Artırmak" : goal === "fatburn" ? "Yağ Yakımı" : "Formda Kalma",
+      workoutTime: "akşam",
+      fatMass: parseFloat(fatPercentage),
+      muscleMass: parseFloat(muscleMass),
+      level
+    });
   };
 
   const handleClear = async () => {
@@ -93,6 +97,7 @@ export default function BodyAnalysisForm({ navigation }) {
     setWaterPercentage('');
     setBodyType('');
     setGoal('');
+    setLevel('');
   };
 
   return (
@@ -103,125 +108,26 @@ export default function BodyAnalysisForm({ navigation }) {
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>🧬 FitBio AI | Gelişmiş Vücut Analizi</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Boy (cm)"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          returnKeyType="next"
-          onSubmitEditing={() => weightRef.current.focus()}
-          blurOnSubmit={false}
-          value={height}
-          onChangeText={setHeight}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Kilo (kg)"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          ref={weightRef}
-          returnKeyType="next"
-          onSubmitEditing={() => ageRef.current.focus()}
-          blurOnSubmit={false}
-          value={weight}
-          onChangeText={setWeight}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Yaş"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          ref={ageRef}
-          returnKeyType="next"
-          onSubmitEditing={() => genderRef.current.focus()}
-          blurOnSubmit={false}
-          value={age}
-          onChangeText={setAge}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Cinsiyet (male / female)"
-          placeholderTextColor="#aaa"
-          ref={genderRef}
-          returnKeyType="next"
-          onSubmitEditing={() => activityRef.current.focus()}
-          blurOnSubmit={false}
-          value={gender}
-          onChangeText={setGender}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Aktivite düzeyi (passive / active / athletic)"
-          placeholderTextColor="#aaa"
-          ref={activityRef}
-          value={activityLevel}
-          onChangeText={setActivityLevel}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Yağ Oranı (%)"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          value={fatPercentage}
-          onChangeText={setFatPercentage}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Kas Kütlesi (kg) – Opsiyonel"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          value={muscleMass}
-          onChangeText={setMuscleMass}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Sıvı Oranı (%) – Opsiyonel"
-          placeholderTextColor="#aaa"
-          keyboardType="numeric"
-          value={waterPercentage}
-          onChangeText={setWaterPercentage}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Vücut Tipi (ektomorf / mezomorf / endomorf)"
-          placeholderTextColor="#aaa"
-          value={bodyType}
-          onChangeText={setBodyType}
-        />
-
-        <TextInput
-          style={styles.input}
-          placeholder="Hedef (muscle / fatburn / maintain)"
-          placeholderTextColor="#aaa"
-          value={goal}
-          onChangeText={setGoal}
-        />
+        <TextInput style={styles.input} placeholder="Boy (cm)" placeholderTextColor="#aaa" keyboardType="numeric" returnKeyType="next" onSubmitEditing={() => weightRef.current.focus()} blurOnSubmit={false} value={height} onChangeText={setHeight} />
+        <TextInput style={styles.input} placeholder="Kilo (kg)" placeholderTextColor="#aaa" keyboardType="numeric" ref={weightRef} returnKeyType="next" onSubmitEditing={() => ageRef.current.focus()} blurOnSubmit={false} value={weight} onChangeText={setWeight} />
+        <TextInput style={styles.input} placeholder="Yaş" placeholderTextColor="#aaa" keyboardType="numeric" ref={ageRef} returnKeyType="next" onSubmitEditing={() => genderRef.current.focus()} blurOnSubmit={false} value={age} onChangeText={setAge} />
+        <TextInput style={styles.input} placeholder="Cinsiyet (male / female)" placeholderTextColor="#aaa" ref={genderRef} returnKeyType="next" onSubmitEditing={() => activityRef.current.focus()} blurOnSubmit={false} value={gender} onChangeText={setGender} />
+        <TextInput style={styles.input} placeholder="Aktivite düzeyi (passive / active / athletic)" placeholderTextColor="#aaa" ref={activityRef} value={activityLevel} onChangeText={setActivityLevel} />
+        <TextInput style={styles.input} placeholder="Yağ Oranı (%)" placeholderTextColor="#aaa" keyboardType="numeric" value={fatPercentage} onChangeText={setFatPercentage} />
+        <TextInput style={styles.input} placeholder="Kas Kütlesi (kg) – Opsiyonel" placeholderTextColor="#aaa" keyboardType="numeric" value={muscleMass} onChangeText={setMuscleMass} />
+        <TextInput style={styles.input} placeholder="Sıvı Oranı (%) – Opsiyonel" placeholderTextColor="#aaa" keyboardType="numeric" value={waterPercentage} onChangeText={setWaterPercentage} />
+        <TextInput style={styles.input} placeholder="Vücut Tipi (ektomorf / mezomorf / endomorf)" placeholderTextColor="#aaa" value={bodyType} onChangeText={setBodyType} />
+        <TextInput style={styles.input} placeholder="Hedef (muscle / fatburn / maintain)" placeholderTextColor="#aaa" value={goal} onChangeText={setGoal} />
+        <TextInput style={styles.input} placeholder="Seviye (beginner / intermediate / advanced)" placeholderTextColor="#aaa" value={level} onChangeText={setLevel} />
 
         <View style={styles.button}>
-          <Button
-            mode="contained"
-            onPress={handleGoalSubmit}
-            buttonColor="#4ade80"
-            textColor="#fff"
-          >
+          <Button mode="contained" onPress={handleGoalSubmit} buttonColor="#4ade80" textColor="#fff">
             ✅ Analizi Başlat ve Sonuca Git
           </Button>
         </View>
 
         <View style={{ marginTop: 15 }}>
-          <Button
-            mode="outlined"
-            textColor="#f44336"
-            onPress={handleClear}
-          >
+          <Button mode="outlined" textColor="#f44336" onPress={handleClear}>
             🧹 Verileri Temizle
           </Button>
         </View>
