@@ -1,48 +1,66 @@
 
-# 🧠 FitBio AI
-
-FitBio AI, biyolojik verilerinize göre diyet, antrenman ve takviye önerileri sunan yapay zekâ destekli kişisel sağlık koçudur.
-
----
-
-## 🚀 Özellikler
-
-- 🎯 Kişiselleştirilmiş vücut analizi (boy, kilo, yaş, cinsiyet, yağ/kas oranı)
-- 🔥 BMR & TDEE hesaplamaları
-- 🏋️‍♀️ Hedefe göre antrenman planı (kas kazanımı, yağ yakımı, form koruma)
-- 🥗 Akıllı diyet sistemi (AI + Manuel giriş)
-- 💊 Takviye önerileri (örn. Creatine, Follistatin, L-Carnitine)
-- 🎵 Müzik kütüphanesi
-- 📤 PDF çıktısı alma ve paylaşma
-- 🔔 Günlük hatırlatmalar (su iç, antrenman saati, takviye)
+<h1 align="center">🧠 FitBio AI</h1>
+<p align="center">Kişisel biyometrik verilerine dayalı en akıllı sağlık ve fitness rehberi</p>
 
 ---
 
-## 📱 Platform Desteği
+## ✨ Özellikler
 
-- ✅ Android (APK veya Google Play üzerinden)
-- ✅ iOS (Expo Go / TestFlight)
+- 🎯 Hedef bazlı analiz (Kas kazanımı, Yağ yakımı, Formda kalma)
+- 📊 Gelişmiş Vücut Analizi (BMI, BMR, TDEE, yağ/kas oranı)
+- 🧬 AI destekli diyet planlama (otomatik veya manuel)
+- 💪 Haftalık antrenman planı (başlangıç, orta, ileri seviye)
+- 💊 Takviye önerileri (Creatine, Follistatin, L-Carnitine vs)
+- 🎵 Spor müzik kütüphanesi (lokal klasör destekli)
+- 🔔 Hatırlatıcı sistem (su iç, antrenman saati, takviye alımı)
+- 📤 PDF çıktısı (plan & analiz raporu)
+- 📲 Günlük check-in ve gelişim takibi
+
+---
+
+## 📦 Platform Desteği
+
+| Platform  | Durum         |
+|-----------|---------------|
+| ✅ Android | AAB / APK Build |
+| ✅ iOS     | Expo Dev Client / TestFlight |
 
 ---
 
 ## 📲 Android APK İndir
 
-[![Download FitBioAI](https://img.shields.io/badge/Download-FitBioAI-green?logo=android)](https://expo.dev/artifacts/eas/xxkzi4WyoSRXWFMFRvUzJh.aab)
+[![Download APK](https://img.shields.io/badge/Download-APK-green?logo=android)](https://expo.dev/artifacts/eas/xxkzi4WyoSRXWFMFRvUzJh.aab)
 
-Bu APK dosyasını indirip Android cihazınıza kurabilirsiniz.
-
----
-
-## 👨‍💻 Geliştirici
-
-Ahmet Şen  
-📧 ahmetsen53@gmail.com  
-🌐 [GitHub: @ahmtub](https://github.com/ahmtub)
+Uygulama Android cihazınıza yüklenebilir.
 
 ---
 
-## ⚠️ Lisans ve Uyarı
+## 🚀 Kurulum (Geliştirici için)
 
-Bu proje eğitim, demo ve portföy amacıyla geliştirilmiştir.  
-Ticari kullanım ve kodun izinsiz dağıtımı yasaktır.  
-Tüm hakları saklıdır © 2025 Ahmet Şen
+```bash
+npm install
+npx expo start
+```
+
+Build almak için:
+```bash
+eas build -p android --profile production
+```
+
+---
+
+## 👤 Geliştirici
+
+- **Ahmet Şen**
+- 📧 ahmetsen53@gmail.com
+- 🌐 [GitHub: @ahmtub](https://github.com/ahmtub)
+
+> 🚀 Plus ve Pro sürümler yakında! Takipte kal.
+
+---
+
+## 📜 Lisans & Uyarı
+
+Bu uygulama demo, eğitim ve portföy kullanımına yöneliktir.  
+Ticari kullanım ve izinsiz dağıtımı yasaktır.  
+Tüm hakları saklıdır © 2025 - Ahmet Şen
