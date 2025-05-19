@@ -1,48 +1,63 @@
 
 # 🧠 FitBio AI
+> *Your AI-powered personal health & fitness assistant.*
 
-**FitBio AI** is your intelligent, personalized fitness and wellness coach.  
-It uses biological data and goal-based AI logic to generate dynamic training plans, peptide/supplement recommendations, and even culturally tailored diet menus.  
+![Splash Screen](./assets/splash-icon.png)
 
-> 🚀 Built with **React Native**, **Expo**, and **EAS Build**
-
----
-
-## ✨ Features
-
-- 🎯 Personalized health tracking (height, weight, age, gender, body composition)
-- 🔥 BMR & TDEE calculations with smart adjustments
-- 💪 Adaptive plans for fat burning or muscle building
-- 🧬 Peptide & supplement advisor (e.g., Follistatin, MK-677, Creatine)
-- 🥗 Cultural meal planner (menus vary by country & goal)
-- 📤 Export personalized plans to PDF
-- 🔔 Daily push notifications (water, workout, supplement)
-- ✅ Mood and sleep-based daily check-in
+FitBio AI, biyolojik verilerinizi analiz eder, hedeflerinize göre (kas yapımı, yağ yakımı, formda kalma) en uygun antrenman, diyet ve takviye programlarını sunar.  
+💪 AI tabanlı planlama, 📊 vücut analizleri, 📤 PDF çıktısı ve daha fazlası — hepsi tek uygulamada!
 
 ---
 
-## 📱 Platform Support
+## 🚀 Özellikler
 
-- ✅ Android (via APK or Google Play)
-- ✅ iOS (via Expo Dev Client or TestFlight)
+| Kategori | Açıklama |
+|---------|----------|
+| 🎯 **Kişiselleştirme** | Boy, kilo, yaş, cinsiyet, yağ/kas/su oranı ile analiz |
+| 🔥 **Metabolizma Hesabı** | Akıllı BMR & TDEE hesaplamaları |
+| 💪 **Antrenman Planı** | Hedefe göre (yağ yakımı, kas yapımı, form) + Seviye bazlı (başlangıç, orta, ileri) |
+| 🧬 **Takviye Önerileri** | Follistatin, MK-677, Creatine vb. |
+| 🥗 **Kültürel Diyetler** | Hedef ve kültüre özel 60+ menü |
+| 🎧 **Müzik Kütüphanesi** | Spor sırasında çalabileceğiniz özel playlist |
+| 📤 **PDF Çıktısı** | Günlük/haftalık planları dışa aktar |
+| 🔔 **Akıllı Hatırlatıcılar** | Su iç, antrenman zamanı, uyku öncesi, takviye bildirimi |
+| 📈 **Check-in & Grafikler** | Günlük gelişim takibi |
 
 ---
 
-## 🌍 Live Demo & Download
+## 🆚 Sürüm Farkları
 
-- 👉 [Expo Preview](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai)
-- 📥 [Download Android APK](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai/builds/4f5b0b3a-7936-4b64-bc0a-dc822c9adb13)
+| Özellik                 | Free    | Plus (🎟️) | Pro (🔥) |
+|-------------------------|---------|------------|-----------|
+| Temel analiz & plan     | ✅       | ✅          | ✅         |
+| Gelişmiş antrenman PDF  | 🚫       | ✅          | ✅         |
+| Spotify/YouTube senk.   | 🚫       | ✅          | ✅         |
+| Peptid veritabanı       | 🚫       | 🚫          | ✅         |
+| Bildirim özelleştirme   | 🚫       | ✅          | ✅         |
+| Haftalık e-posta raporu | 🚫       | 🚫          | ✅         |
+
+> ⚙️ Plus/Pro özellikleri yakında açılacak. Geliştirme devam ediyor...
 
 ---
 
-## 📦 Installation (Dev)
+## 📲 Platform Desteği
+
+- ✅ Android (.apk / Google Play)
+- ✅ iOS (Expo Go & TestFlight)
+- ✅ Web sürüm desteği (yakında)
+
+---
+
+## 📦 Kurulum (Geliştirici)
 
 ```bash
+git clone https://github.com/ahmtub/fitbio-ai
+cd fitbio-ai
 npm install
 npx expo start
 ```
 
-To build for production:
+### 🏗️ Production Build
 
 ```bash
 eas build -p android --profile production
@@ -50,20 +65,26 @@ eas build -p android --profile production
 
 ---
 
-## 👨‍💻 Developer
+## 📷 Ekran Görüntüleri
 
-Developed by **Ahmet Şen**  
-GitHub: [@ahmtub](https://github.com/ahmtub)
-
----
-
-## 📜 License & Disclaimer
-
-This project is for educational and portfolio use.  
-All rights reserved © 2025 by Ahmet Şen.
-
-🔒 Unauthorized copying, redistribution, or use of the code or APK for commercial purposes without permission is strictly prohibited.
+_(eklenecek)_
 
 ---
 
-FitBio AI – More than an app. Your digital health companion.
+## 👨‍💻 Geliştirici
+
+**Ahmet Şen**  
+GitHub: [@ahmtub](https://github.com/ahmtub)  
+Proje: `fitbio-ai` (2025)
+
+---
+
+## 📜 Lisans ve Yasal Bilgilendirme
+
+> Tüm hakları saklıdır © 2025 Ahmet Şen  
+Bu proje eğitim, kişisel portföy ve açık kaynak inceleme amacıyla sunulmuştur.  
+Herhangi bir ticari amaçla **izinsiz çoğaltılamaz, dağıtılamaz veya satılamaz.**
+
+---
+
+### 💬 FitBio AI — *More than an app. Your digital health companion.*
