@@ -1,3 +1,4 @@
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect } from 'react';
@@ -12,6 +13,7 @@ import ResultScreen from './screens/ResultScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import UserProfileScreen from './screens/UserProfileScreen';
 import DailyPlanScreen from './screens/DailyPlanScreen';
+import CustomDietScreen from './screens/CustomDietScreen';
 
 import { UserSettingsProvider } from './context/UserSettingsContext';
 import { registerForPushNotificationsAsync, setupDailyReminders } from './utils/notifications';
@@ -45,6 +47,7 @@ export default function App() {
             <Stack.Screen name="MusicLibrary" component={MusicLibraryScreen} options={{ title: 'Spor Müzikleri' }} />
             <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profilim & PDF Geçmişi' }} />
             <Stack.Screen name="DailyPlanScreen" component={DailyPlanScreen} options={{ title: 'AI Günlük Plan' }} />
+            <Stack.Screen name="CustomDiet" component={CustomDietScreen} options={{ title: 'Kendi Diyetim' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calculateBodyMetrics } from '../utils/useBodyMetrics';
 import { recommendDiet } from '../utils/dietRecommender';
 import { generateWorkoutPlan } from '../utils/workoutPlanner';
+import { generateDailyPlanPDF } from '../utils/pdfHelper';
 
 export default function ResultScreen({ route }) {
   const {
@@ -16,6 +18,7 @@ export default function ResultScreen({ route }) {
   const [metrics, setMetrics] = useState(null);
   const [diet, setDiet] = useState(null);
   const [workoutPlan, setWorkoutPlan] = useState([]);
+  const [customDiet, setCustomDiet] = useState(null);
 
   useEffect(() => {
     const calc = calculateBodyMetrics({
@@ -32,30 +35,51 @@ export default function ResultScreen({ route }) {
 
     const plan = generateWorkoutPlan(goal, muscleMass, workoutTime, level);
     setWorkoutPlan(plan);
+
+    const loadCustomDiet = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('fitbio_custom_diet');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          console.log('📝 Kullanıcı Diyeti:', parsed);
+          setCustomDiet(parsed);
+        } else {
+          console.log('📝 Kullanıcı diyeti bulunamadı.');
+        }
+      } catch (e) {
+        console.log('❌ Diyet okuma hatası:', e);
+      }
+    };
+
+    loadCustomDiet();
   }, []);
 
+  useEffect(() => {
+    console.log("🎯 Hedef:", goal);
+    console.log("🕕 Antrenman Saati:", workoutTime);
+    console.log("📊 Vücut Analizi:", metrics);
+    console.log("📦 AI Diyeti:", diet);
+    console.log("💊 Takviyeler:", diet?.supplements);
+    console.log("🏋️ Antrenman Planı:", workoutPlan);
+    console.log("📝 Kendi Diyet Planı:", customDiet);
+  }, [metrics, diet, workoutPlan, customDiet]);
+
   const handleShare = async () => {
-    const content = generatePlanText();
-    const path = FileSystem.documentDirectory + 'plan_summary.txt';
-    await FileSystem.writeAsStringAsync(path, content);
+    console.log("📤 PDF İçeriği Gönderiliyor:");
+    console.log("  🎯 goal:", goal);
+    console.log("  🧮 analysisResult:", metrics);
+    console.log("  🍽️ diet:", diet);
+    console.log("  🏋️ workoutPlan:", workoutPlan);
+    console.log("  📝 customDiet:", customDiet);
 
-    try {
-      await Sharing.shareAsync(path);
-    } catch (error) {
-      Alert.alert('Paylaşım Hatası', 'Plan paylaşılırken bir sorun oluştu.');
-    }
-  };
-
-  const generatePlanText = () => {
-    let text = "📋 FitBio AI - Antrenman Planı Özeti\n\n";
-    workoutPlan.forEach(day => {
-      text += `📅 ${day.day}:\n`;
-      day.exercises.forEach(ex => {
-        text += `- ${ex.name} (${ex.sets}x${ex.reps})\n`;
-      });
-      text += '\n';
+    await generateDailyPlanPDF({
+      goal,
+      workoutTime,
+      customDiet,
+      analysisResult: metrics,
+      workoutPlan,
+      diet
     });
-    return text;
   };
 
   if (!metrics || !diet) {
@@ -95,10 +119,25 @@ export default function ResultScreen({ route }) {
       <Text style={styles.item}>🍲 Akşam: {diet.meals.dinner}</Text>
       <Text style={styles.item}>🍏 Ara Öğün: {diet.meals.snacks}</Text>
 
-      <Text style={styles.sectionTitle}>💊 Takviye Önerileri</Text>
-      {diet.supplements.map((supp, i) => (
-        <Text key={i} style={styles.item}>• {supp}</Text>
-      ))}
+      {diet.supplements && diet.supplements.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>💊 Takviye Önerileri</Text>
+          {diet.supplements.map((supp, i) => (
+            <Text key={i} style={styles.item}>• {supp}</Text>
+          ))}
+        </>
+      )}
+
+      {customDiet && (
+        <>
+          <Text style={styles.sectionTitle}>📝 Kendi Diyet Planın</Text>
+          <Text style={styles.item}>🥣 Kahvaltı: {customDiet.breakfast}</Text>
+          <Text style={styles.item}>🍛 Öğle: {customDiet.lunch}</Text>
+          <Text style={styles.item}>🍲 Akşam: {customDiet.dinner}</Text>
+          <Text style={styles.item}>🍏 Ara Öğün: {customDiet.snacks}</Text>
+          <Text style={styles.item}>💊 Takviyeler: {customDiet.supplements}</Text>
+        </>
+      )}
 
       <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
         <Text style={styles.shareText}>📤 Planı Paylaş / Kaydet</Text>

@@ -1,78 +1,67 @@
 
-// utils/pdfHelper.js
-
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 
-/**
- * PDF plan oluşturur
- * @param {object} options
- * @param {string} options.goal
- * @param {string} options.workoutTime
- * @param {object} options.customDiet
- * @param {object} options.analysisResult
- * @param {object} [options.progress]
- * @param {array} [options.workoutPlan]
- */
-export async function generateDailyPlanPDF({ goal, workoutTime, customDiet, analysisResult, progress, workoutPlan }) {
-  const workoutSection = workoutPlan && workoutPlan.length > 0
-    ? `
-    <div class="section">
-      <h2>🏋️ Haftalık Antrenman Rehberi:</h2>
-      ${workoutPlan.map(group => `
-        <h3>🔹 ${group.muscleGroup} (${group.subGroup})</h3>
-        <ul>
-          ${group.exercises.map(ex => `
-            <li><strong>${ex.name}</strong> – ${ex.sets} set × ${ex.reps} tekrar (${ex.equipment})</li>
-          `).join('')}
-        </ul>
-      `).join('')}
-    </div>
-    `
-    : '';
-
+export async function generateDailyPlanPDF({ goal, workoutTime, customDiet, analysisResult, workoutPlan, diet }) {
   const htmlContent = `
   <html>
     <head>
+      <meta charset="UTF-8" />
       <style>
-        body { font-family: Arial; padding: 20px; background-color: #f4f4f4; }
-        h1 { color: #333; }
-        h2 { color: #444; margin-top: 20px; }
-        h3 { color: #555; margin-bottom: 5px; }
-        p, li { margin: 5px 0; font-size: 14px; }
+        body { font-family: Arial, sans-serif; padding: 20px; background: #fff; color: #111; }
+        h1 { text-align: center; color: #4caf50; }
         .section { margin-bottom: 20px; }
-        ul { padding-left: 20px; }
+        .section h2 { color: #333; margin-bottom: 8px; }
+        .item { margin: 4px 0; }
       </style>
     </head>
     <body>
-      <h1>Günlük Plan</h1>
+      <h1>FitBio AI – Günlük Plan Özeti</h1>
+
       <div class="section">
-        <h2>🎯 Hedef:</h2>
-        <p>${goal}</p>
+        <h2>📊 Vücut Analizi</h2>
+        <p class="item">🎯 Hedef: ${goal || 'Belirtilmedi'}</p>
+        <p class="item">🕕 Antrenman Saati: ${workoutTime || 'Belirtilmedi'}</p>
+        <p class="item">🧍‍♂️ BMI: ${analysisResult?.bmi || 'Yok'}</p>
+        <p class="item">🔥 BMR: ${analysisResult?.bmr || 'Yok'} kcal</p>
+        <p class="item">⚡ TDEE: ${analysisResult?.tdee || 'Yok'} kcal</p>
+        <p class="item">🧈 Yağ Kütlesi: ${analysisResult?.fatMass || 'Yok'} kg</p>
+        <p class="item">💪 Kas Kütlesi: ${analysisResult?.muscleMass || 'Yok'} kg</p>
       </div>
+
       <div class="section">
-        <h2>🕕 Antrenman Zamanı:</h2>
-        <p>${workoutTime}</p>
+        <h2>🏋️ Haftalık Antrenman Planı</h2>
+        ${workoutPlan?.length > 0 ? workoutPlan.map(day => `
+          <div class="item">📅 <strong>${day.day}</strong></div>
+          ${day.exercises.map(ex => `
+            <div class="item">• ${ex.name} (${ex.sets}x${ex.reps})</div>
+          `).join('')}
+        `).join('') : '<p class="item">Antrenman planı bulunamadı.</p>'}
       </div>
+
       <div class="section">
-        <h2>🧾 Diyet Planı:</h2>
-        <p><strong>Kahvaltı:</strong> ${customDiet.breakfast}</p>
-        <p><strong>Öğle:</strong> ${customDiet.lunch}</p>
-        <p><strong>Akşam:</strong> ${customDiet.dinner}</p>
-        <p><strong>Ara Öğün:</strong> ${customDiet.snacks}</p>
+        <h2>🍽️ AI Tabanlı Günlük Diyet</h2>
+        <p class="item">🥣 Kahvaltı: ${diet?.meals?.breakfast || 'Yok'}</p>
+        <p class="item">🍛 Öğle: ${diet?.meals?.lunch || 'Yok'}</p>
+        <p class="item">🍲 Akşam: ${diet?.meals?.dinner || 'Yok'}</p>
+        <p class="item">🍏 Ara Öğün: ${diet?.meals?.snacks || 'Yok'}</p>
       </div>
-      <div class="section">
-        <h2>📊 Beslenme Analizi:</h2>
-        <p>Protein durumu: ${analysisResult.protein}</p>
-        <p>Karbonhidrat durumu: ${analysisResult.carbohydrate}</p>
-      </div>
-      ${workoutSection}
-      ${progress ? `
+
+      ${diet?.supplements?.length ? `
         <div class="section">
-          <h2>📈 Haftalık Gelişim:</h2>
-          <p>🏋️ Kilo: ${progress.weight.start} → ${progress.weight.end} kg (${progress.weight.status})</p>
-          <p>🔥 Yağ Oranı: ${progress.fat.start}% → ${progress.fat.end}% (${progress.fat.status})</p>
-          <p>💪 Kas Oranı: ${progress.muscle.start}% → ${progress.muscle.end}% (${progress.muscle.status})</p>
+          <h2>💊 Takviye Önerileri</h2>
+          ${diet.supplements.map(s => `<div class="item">• ${s}</div>`).join('')}
+        </div>
+      ` : ''}
+
+      ${customDiet ? `
+        <div class="section">
+          <h2>📝 Kendi Diyet Planın</h2>
+          <p class="item">🥣 Kahvaltı: ${customDiet.breakfast}</p>
+          <p class="item">🍛 Öğle: ${customDiet.lunch}</p>
+          <p class="item">🍲 Akşam: ${customDiet.dinner}</p>
+          <p class="item">🍏 Ara Öğün: ${customDiet.snacks}</p>
+          <p class="item">💊 Takviyeler: ${customDiet.supplements}</p>
         </div>
       ` : ''}
     </body>
