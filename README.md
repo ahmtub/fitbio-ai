@@ -22,20 +22,12 @@
 
 ---
 
-## 📱 Platforms
+## 📲 Android Downloads
 
-| Platform | Status |
-|----------|--------|
-| Android  | ✅ AAB/Manual Install |
-| iOS      | ✅ Expo Go / TestFlight |
-
----
-
-## 📲 Download APK
-
-[![Download APK](https://img.shields.io/badge/Download-FitBioAI-green?logo=android)](https://expo.dev/artifacts/eas/rLqCWTUMzWDtSZug46VEEF.aab)
-
-Compatible with most Android devices (API 23+).
+| Format | Description                  | Link |
+|--------|------------------------------|------|
+| 🔹 APK  | Manual installation for testing | [Download APK](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai/builds/8130d6ce-a75c-4a1f-9701-6ca623c14c62) |
+| 🔸 AAB  | Play Store publishing format    | [Download AAB](https://expo.dev/artifacts/eas/rLqCWTUMzWDtSZug46VEEF.aab) |
 
 ---
 
@@ -49,8 +41,6 @@ FitBio AI was developed as a **portfolio project** to showcase a complete cross-
 - Local notification API
 - Modern UI with dark mode and animated icons
 
-> 💡 This project demonstrates full-stack mobile development for health, fitness, and AI-backed user experience.
-
 ---
 
 ## 👨‍💻 Developer
@@ -58,6 +48,8 @@ FitBio AI was developed as a **portfolio project** to showcase a complete cross-
 - Name: Ahmet Şen  
 - 📧 Email: ahmetsen53@gmail.com  
 - 🌐 GitHub: [github.com/ahmtub](https://github.com/ahmtub)
+
+> 🚀 Plus and Pro versions coming soon – stay tuned!
 
 ---
 
