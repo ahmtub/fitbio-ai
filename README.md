@@ -1,66 +1,68 @@
 
 <h1 align="center">🧠 FitBio AI</h1>
-<p align="center">Kişisel biyometrik verilerine dayalı en akıllı sağlık ve fitness rehberi</p>
+<p align="center"><em>Your AI-powered fitness and health assistant</em></p>
+
+<p align="center">
+  <img src="assets/FitBio_AI.jpeg" alt="FitBio AI Screenshot" width="280"/>
+</p>
 
 ---
 
-## ✨ Özellikler
+## 🚀 Features
 
-- 🎯 Hedef bazlı analiz (Kas kazanımı, Yağ yakımı, Formda kalma)
-- 📊 Gelişmiş Vücut Analizi (BMI, BMR, TDEE, yağ/kas oranı)
-- 🧬 AI destekli diyet planlama (otomatik veya manuel)
-- 💪 Haftalık antrenman planı (başlangıç, orta, ileri seviye)
-- 💊 Takviye önerileri (Creatine, Follistatin, L-Carnitine vs)
-- 🎵 Spor müzik kütüphanesi (lokal klasör destekli)
-- 🔔 Hatırlatıcı sistem (su iç, antrenman saati, takviye alımı)
-- 📤 PDF çıktısı (plan & analiz raporu)
-- 📲 Günlük check-in ve gelişim takibi
-
----
-
-## 📦 Platform Desteği
-
-| Platform  | Durum         |
-|-----------|---------------|
-| ✅ Android | AAB / APK Build |
-| ✅ iOS     | Expo Dev Client / TestFlight |
+- 🎯 Goal-based body analysis: muscle gain, fat loss, or maintenance
+- 📊 Smart metrics: BMI, BMR, TDEE, fat and muscle mass
+- 🧬 AI-powered daily meal plans + manual diet entry support
+- 💪 Weekly workout plans by level & focus (home/gym)
+- 💊 Supplement recommendations (Creatine, L-Carnitine, etc.)
+- 🎧 Workout music player
+- 🔔 Daily reminders (water, training, sleep, supplements)
+- 📤 Export to PDF (AI plan, custom diet, training plan)
+- ✅ Save and track weekly progress with graphs
 
 ---
 
-## 📲 Android APK İndir
+## 📱 Platforms
 
-[![Download APK](https://img.shields.io/badge/Download-APK-green?logo=android)](https://expo.dev/artifacts/eas/xxkzi4WyoSRXWFMFRvUzJh.aab)
-
-Uygulama Android cihazınıza yüklenebilir.
-
----
-
-## 🚀 Kurulum (Geliştirici için)
-
-```bash
-npm install
-npx expo start
-```
-
-Build almak için:
-```bash
-eas build -p android --profile production
-```
+| Platform | Status |
+|----------|--------|
+| Android  | ✅ AAB/Manual Install |
+| iOS      | ✅ Expo Go / TestFlight |
 
 ---
 
-## 👤 Geliştirici
+## 📲 Download APK
 
-- **Ahmet Şen**
-- 📧 ahmetsen53@gmail.com
-- 🌐 [GitHub: @ahmtub](https://github.com/ahmtub)
+[![Download APK](https://img.shields.io/badge/Download-FitBioAI-green?logo=android)](https://expo.dev/artifacts/eas/rLqCWTUMzWDtSZug46VEEF.aab)
 
-> 🚀 Plus ve Pro sürümler yakında! Takipte kal.
+Compatible with most Android devices (API 23+).
 
 ---
 
-## 📜 Lisans & Uyarı
+## 🧠 About
 
-Bu uygulama demo, eğitim ve portföy kullanımına yöneliktir.  
-Ticari kullanım ve izinsiz dağıtımı yasaktır.  
-Tüm hakları saklıdır © 2025 - Ahmet Şen
+FitBio AI was developed as a **portfolio project** to showcase a complete cross-platform mobile fitness assistant using:
+- React Native (Expo)
+- SQLite + AsyncStorage
+- Modular utility & AI recommendation systems
+- PDF export with HTML render
+- Local notification API
+- Modern UI with dark mode and animated icons
+
+> 💡 This project demonstrates full-stack mobile development for health, fitness, and AI-backed user experience.
+
+---
+
+## 👨‍💻 Developer
+
+- Name: Ahmet Şen  
+- 📧 Email: ahmetsen53@gmail.com  
+- 🌐 GitHub: [github.com/ahmtub](https://github.com/ahmtub)
+
+---
+
+## 📜 License & Usage
+
+This project is intended for educational, demo and portfolio purposes only.  
+Unauthorized commercial use is strictly prohibited.  
+All rights reserved © 2025 Ahmet Şen
