@@ -15,10 +15,15 @@
 - 🧬 AI-powered daily meal plans + manual diet entry support
 - 💪 Weekly workout plans by level & focus (home/gym)
 - 💊 Supplement recommendations (Creatine, L-Carnitine, etc.)
-- 🎧 Workout music player
+- 🎧 Workout music player with full playlist control:
+  - One-player system
+  - Next/Previous song
+  - Multi-file support
+  - Playlist browsing and real-time controls
 - 🔔 Daily reminders (water, training, sleep, supplements)
 - 📤 Export to PDF (AI plan, custom diet, training plan)
 - ✅ Save and track weekly progress with graphs
+- 🌙 Modern UI, dark mode and clean animated interface
 
 ---
 
@@ -45,9 +50,8 @@ FitBio AI was developed as a **portfolio project** to showcase a complete cross-
 
 ## 👨‍💻 Developer
 
-- Name: Ahmet Şen  
-- 📧 Email: ahmetsen53@gmail.com  
 - 🌐 GitHub: [github.com/ahmtub](https://github.com/ahmtub)
+- 📧 Email: ahmetsen53@gmail.com
 
 > 🚀 Plus and Pro versions coming soon – stay tuned!
 
