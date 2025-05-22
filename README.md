@@ -31,8 +31,8 @@
 
 | Format | Description                  | Link |
 |--------|------------------------------|------|
-| 🔹 APK  | Manual installation for testing | [Download APK](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai/builds/8130d6ce-a75c-4a1f-9701-6ca623c14c62) |
-| 🔸 AAB  | Play Store publishing format    | [Download AAB](https://expo.dev/artifacts/eas/rLqCWTUMzWDtSZug46VEEF.aab) |
+| 🔹 APK  | Manual installation for testing | [Download APK](-) |
+| 🔸 AAB  | Play Store publishing format    | [Download AAB](-) |
 
 ---
 
