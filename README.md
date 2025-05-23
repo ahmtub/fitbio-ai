@@ -27,12 +27,28 @@
 
 ---
 
+## 🌟 Pro Version Available
+
+🎉 An advanced **FitBio AI Pro** version is available as a private project. It includes:
+
+- 🧠 Adaptive AI planning based on training time and goals
+- 📋 Editable, user-specific meal timing and supplements
+- 🧪 Pre-, intra- and post-workout nutritional suggestions
+- 🔐 Offline-first storage with backup
+- 🎵 Spotify & YouTube Music integration
+- 🔄 Dynamic user profiling and goal adjustments
+- 🧾 Professional PDF output with advanced formatting
+
+> 🔐 Pro version is available for portfolio, private demo, or professional use upon request.
+
+---
+
 ## 📲 Android Downloads
 
 | Format | Description                  | Link |
 |--------|------------------------------|------|
-| 🔹 APK  | Manual installation for testing | [Download APK](https://expo.dev/accounts/seranodanwow/projects/fitbio-ai/builds/8130d6ce-a75c-4a1f-9701-6ca623c14c62) |
-| 🔸 AAB  | Play Store publishing format    | [Download AAB](https://expo.dev/artifacts/eas/rLqCWTUMzWDtSZug46VEEF.aab) |
+| 🔹 APK  | Manual installation for testing | [Download APK](-) |
+| 🔸 AAB  | Play Store publishing format    | [Download AAB](-) |
 
 ---
 
