@@ -43,6 +43,14 @@
 
 ---
 
+
+---
+
+## 🖼️ FitBio AI Pro – Ekran Görüntüsü
+
+<p align="center">
+  <img src="assets/fitbio-ai-pro.jpeg" alt="FitBio Pro Screenshot" width="320"/>
+</p>
 ## 📲 Android Downloads
 
 | Format | Description                  | Link |
